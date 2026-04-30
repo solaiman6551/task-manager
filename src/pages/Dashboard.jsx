@@ -22,6 +22,12 @@ const Dashboard = () => {
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-600">{user?.email}</span>
           <button
+            onClick={() => navigate('/profile')}
+            className="text-sm text-blue-600 hover:text-blue-800 transition"
+          >
+            Profile
+          </button>
+          <button
             onClick={handleLogout}
             className="text-sm text-red-500 hover:text-red-700 transition"
           >
