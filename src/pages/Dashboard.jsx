@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { clearUser } from '../features/auth/authSlice'
 import TaskList from '../features/tasks/TaskList'
@@ -8,6 +8,7 @@ const Dashboard = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { user } = useSelector((state) => state.auth)
+  const { data: profile } = useSelector((state) => state.profile)
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -21,12 +22,20 @@ const Dashboard = () => {
         <h1 className="text-xl font-bold text-blue-600">Task Manager</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm text-gray-600">{user?.email}</span>
-          <button
-            onClick={() => navigate('/profile')}
+          {profile?.role === 'admin' && (
+            <Link
+              to="/admin"
+              className="text-sm text-purple-600 hover:text-purple-800 transition"
+            >
+              Admin
+            </Link>
+          )}
+          <Link
+            to="/profile"
             className="text-sm text-blue-600 hover:text-blue-800 transition"
           >
             Profile
-          </button>
+          </Link>
           <button
             onClick={handleLogout}
             className="text-sm text-red-500 hover:text-red-700 transition"

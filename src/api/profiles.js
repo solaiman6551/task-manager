@@ -20,3 +20,11 @@ export const updateProfile = async (userId, updates) => {
   if (error) throw error
   return data
 }
+
+export const getAllUsers = async () => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, email, full_name, role')
+  if (error) throw error
+  return data
+}

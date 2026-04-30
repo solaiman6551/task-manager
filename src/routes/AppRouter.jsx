@@ -3,7 +3,9 @@ import LoginPage from '../features/auth/LoginPage'
 import SignupPage from '../features/auth/SignupPage'
 import Dashboard from '../pages/Dashboard'
 import ProfilePage from '../pages/ProfilePage'
+import AdminDashboard from '../features/admin/AdminDashboard'
 import PrivateRoute from './PrivateRoute'
+import AdminRoute from './AdminRoute'
 
 const AppRouter = () => {
   return (
@@ -20,6 +22,11 @@ const AppRouter = () => {
           <PrivateRoute>
             <ProfilePage />
           </PrivateRoute>
+        } />
+        <Route path="/admin" element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
         } />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

@@ -26,6 +26,9 @@ const TaskCard = ({ task }) => {
     }
   }
 
+  const assignedUser = task.assigned_to
+  const assignedName = assignedUser?.full_name || assignedUser?.email || 'Unassigned'
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex flex-col gap-2">
       <div className="flex items-start justify-between">
@@ -50,6 +53,12 @@ const TaskCard = ({ task }) => {
         {task.due_date && (
           <span className="text-xs text-gray-400">Due: {task.due_date}</span>
         )}
+      </div>
+      <div className="flex items-center gap-2 mt-1">
+        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+          {assignedName[0]?.toUpperCase()}
+        </div>
+        <span className="text-xs text-gray-500">{assignedName}</span>
       </div>
       <select
         value={task.status}

@@ -1,17 +1,24 @@
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { addTask } from './tasksSlice'
+import { fetchAllUsers } from '../auth/profileSlice'
 import { supabase } from '../../lib/supabaseClient'
 
 const TaskForm = ({ onClose }) => {
   const dispatch = useDispatch()
+  const { allUsers } = useSelector((state) => state.profile)
   const [form, setForm] = useState({
     title: '',
     description: '',
     priority: 'medium',
     due_date: '',
+    assigned_to: '',
   })
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    dispatch(fetchAllUsers())
+  }, [dispatch])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -21,7 +28,12 @@ const TaskForm = ({ onClose }) => {
     e.preventDefault()
     setLoading(true)
     const { data: { user } } = await supabase.auth.getUser()
-    await dispatch(addTask({ ...form, created_by: user.id, status: 'todo' }))
+    await dispatch(addTask({
+      ...form,
+      assigned_to: form.assigned_to || null,
+      created_by: user.id,
+      status: 'todo'
+    }))
     setLoading(false)
     onClose()
   }
@@ -56,6 +68,19 @@ const TaskForm = ({ onClose }) => {
             <option value="low">Low Priority</option>
             <option value="medium">Medium Priority</option>
             <option value="high">High Priority</option>
+          </select>
+          <select
+            name="assigned_to"
+            value={form.assigned_to}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Unassigned</option>
+            {allUsers.map(user => (
+              <option key={user.id} value={user.id}>
+                {user.full_name || user.email}
+              </option>
+            ))}
           </select>
           <input
             name="due_date"

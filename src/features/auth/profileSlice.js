@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { getProfile, updateProfile } from '../../api/profiles'
+import { getProfile, updateProfile, getAllUsers } from '../../api/profiles'
 
 export const fetchProfile = createAsyncThunk('profile/fetch', async (userId) => {
   return await getProfile(userId)
@@ -9,6 +9,10 @@ export const saveProfile = createAsyncThunk('profile/save', async ({ userId, upd
   return await updateProfile(userId, updates)
 })
 
+export const fetchAllUsers = createAsyncThunk('profile/fetchAllUsers', async () => {
+  return await getAllUsers()
+})
+
 const profileSlice = createSlice({
   name: 'profile',
   initialState: {
@@ -16,6 +20,7 @@ const profileSlice = createSlice({
     loading: false,
     error: null,
     saveSuccess: false,
+    allUsers: [],
   },
   reducers: {
     resetSaveSuccess: (state) => {
@@ -36,6 +41,9 @@ const profileSlice = createSlice({
       .addCase(saveProfile.fulfilled, (state, action) => {
         state.data = action.payload
         state.saveSuccess = true
+      })
+      .addCase(fetchAllUsers.fulfilled, (state, action) => {
+        state.allUsers = action.payload
       })
   },
 })
