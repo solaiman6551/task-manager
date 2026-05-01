@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabaseClient'
 
 const TaskForm = ({ onClose }) => {
   const dispatch = useDispatch()
-  const { allUsers } = useSelector((state) => state.profile)
+  const { allUsers, data: profile } = useSelector((state) => state.profile)
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -16,9 +16,13 @@ const TaskForm = ({ onClose }) => {
   })
   const [loading, setLoading] = useState(false)
 
+  const canAssign = profile?.role === 'admin' || profile?.role === 'manager'
+
   useEffect(() => {
-    dispatch(fetchAllUsers())
-  }, [dispatch])
+    if (canAssign) {
+      dispatch(fetchAllUsers())
+    }
+  }, [dispatch, canAssign])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -69,19 +73,23 @@ const TaskForm = ({ onClose }) => {
             <option value="medium">Medium Priority</option>
             <option value="high">High Priority</option>
           </select>
-          <select
-            name="assigned_to"
-            value={form.assigned_to}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Unassigned</option>
-            {allUsers.map(user => (
-              <option key={user.id} value={user.id}>
-                {user.full_name || user.email}
-              </option>
-            ))}
-          </select>
+
+          {canAssign && (
+            <select
+              name="assigned_to"
+              value={form.assigned_to}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Unassigned</option>
+              {allUsers.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.full_name || user.email} ({user.role})
+                </option>
+              ))}
+            </select>
+          )}
+
           <input
             name="due_date"
             type="date"
